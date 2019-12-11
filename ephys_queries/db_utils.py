@@ -1,9 +1,5 @@
 from sqlalchemy import create_engine, MetaData
-import dotenv
 import os
-
-
-dotenv.load_dotenv()
 
 
 def get_connection_string(environment_dict, no_db=False):
