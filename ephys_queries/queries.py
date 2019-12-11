@@ -616,7 +616,6 @@ def select_discrete_data(
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
 
-    stmt = stmt.limit(10)
     with engine.connect() as conn:
         res = conn.execute(stmt)
     if as_df:
