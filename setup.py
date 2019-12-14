@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 
+
+with open('requirements.txt') as f:
+    reqs = f.read().splitlines()
+
 description = ""
 long_description = ""
 setup(
@@ -15,4 +19,5 @@ setup(
     project_urls={"Source": "https://github.com/Ruairi-osul/ephys_queries"},
     packages=find_packages(),
     python_requires=">=3.3",
+    install_requires=reqs
 )
