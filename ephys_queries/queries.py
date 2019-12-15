@@ -167,7 +167,7 @@ def select_ifr(
     if group_names:
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
-        stmt = stmt.where(experiments.c.experiment.in_(exp_names))
+        stmt = stmt.where(experiments.c.experiments.in_(exp_names))
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
