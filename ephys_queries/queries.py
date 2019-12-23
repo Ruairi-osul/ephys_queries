@@ -588,13 +588,10 @@ def select_discrete_data(
     stmt = stmt.select_from(
         d_data.join(sesh_d_sig)
         .join(d_sigs)
-        .join(r_sesh, r_sesh.c.id == sesh_d_sig.c.recording_session_id)
-        .join(rs_blocks)
+        .join(r_sesh)
         .join(groups)
         .join(experiments)
-        .join(
-            stmt_block, stmt_block.c.recording_session_id == r_sesh.c.id, isouter=False
-        )
+        .join(stmt_block, stmt_block.c.recording_session_id == r_sesh.c.id)
     )
 
     if block_name != "all":
@@ -616,6 +613,9 @@ def select_discrete_data(
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
 
+    from pprint import pprint
+
+    pprint(str(stmt))
     with engine.connect() as conn:
         res = conn.execute(stmt)
     if as_df:
