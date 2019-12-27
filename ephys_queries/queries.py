@@ -145,7 +145,6 @@ def select_ifr(
     stmt = select(columns).select_from(
         ifr.join(neurons)
         .join(r_sesh)
-        .join(rs_blocks)
         .join(groups)
         .join(experiments)
         .join(stmt_block, stmt_block.c.recording_session_id == r_sesh.c.id)
@@ -241,7 +240,6 @@ def select_spike_times(
     stmt = select(columns).select_from(
         spike_times.join(neurons)
         .join(r_sesh)
-        .join(rs_blocks)
         .join(groups)
         .join(experiments)
         .join(stmt_block, stmt_block.c.recording_session_id == r_sesh.c.id)
@@ -401,7 +399,6 @@ def select_analog_signal_data(
         a_data.join(sesh_a_sig)
         .join(a_sigs)
         .join(r_sesh, r_sesh.c.id == sesh_a_sig.c.recording_session_id)
-        .join(rs_blocks)
         .join(groups)
         .join(experiments)
         .join(
@@ -495,7 +492,6 @@ def select_stft(
         stft.join(sesh_a_sig)
         .join(a_sigs)
         .join(r_sesh, r_sesh.c.id == sesh_a_sig.c.recording_session_id)
-        .join(rs_blocks)
         .join(groups)
         .join(experiments)
         .join(
@@ -613,9 +609,6 @@ def select_discrete_data(
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
 
-    from pprint import pprint
-
-    pprint(str(stmt))
     with engine.connect() as conn:
         res = conn.execute(stmt)
     if as_df:
