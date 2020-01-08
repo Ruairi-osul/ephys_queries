@@ -159,8 +159,12 @@ def select_ifr(
         )
     if exclude_excluded_recordings:
         stmt = stmt.where(or_(r_sesh.c.excluded.is_(None), r_sesh.c.excluded == 1))
+
+    if exclude_mua:
+        stmt = stmt.where(not_(neurons.c.is_single_unit == 0))
+
     if neuron_ids:
-        stmt = stmt.where(neurons.c.id.in_(neuron_ids))
+        stmt = stmt.where(not_(neurons.c.is_single_unit))
     if session_names:
         stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
     if group_names:
@@ -254,6 +258,8 @@ def select_spike_times(
                 < stmt_block.c.block_end_samples + (t_after * 30000),
             )
         )
+    if exclude_mua:
+        stmt = stmt.where(not_(neurons.c.is_single_unit == 0))
     if exclude_excluded_recordings:
         stmt = stmt.where(or_(r_sesh.c.excluded.is_(None), r_sesh.c.excluded == 1))
     if neuron_ids:
