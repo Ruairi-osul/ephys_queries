@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sqlalchemy.sql import select, and_, or_
+from sqlalchemy.sql import select, and_, or_, not_
 
 
 def select_recording_sessions(
@@ -332,6 +332,8 @@ def select_waveforms(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if exclude_mua:
+        stmt = stmt.where(not_(neurons.c.is_single_unit == 0))
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
