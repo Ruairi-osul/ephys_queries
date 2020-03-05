@@ -9,4 +9,5 @@ from .queries import (
     select_discrete_data,
     _result_proxy_to_df,
 )
+from .select_raw import get_raw_path
 from .db_utils import get_connection_string, db_setup_core

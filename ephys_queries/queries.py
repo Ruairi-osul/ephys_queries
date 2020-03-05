@@ -73,7 +73,7 @@ def select_neurons(
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
     if session_names:
-        stmt = stmt.where(r_sesh.c.exp_names.in_(session_names))
+        stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
 
     with engine.connect() as con:
         rp = con.execute(stmt)
@@ -354,6 +354,7 @@ def select_analog_signal_data(
     t_before=0,
     t_after=0,
     group_names=None,
+    session_names=None,
     exp_names=None,
     as_df=True,
     align_to_block=False,
@@ -431,6 +432,8 @@ def select_analog_signal_data(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if session_names:
+        stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
