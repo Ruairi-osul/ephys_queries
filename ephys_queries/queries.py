@@ -10,6 +10,7 @@ def select_recording_sessions(
     exp_names=None,
     session_names=None,
     exclude_excluded_recordings=True,
+    sessions_after=None,
     as_df=True,
 ):
     r_sesh, groups, experiments = (
@@ -28,6 +29,8 @@ def select_recording_sessions(
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
     if session_names:
         stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as con:
         rp = con.execute(stmt)
@@ -44,6 +47,7 @@ def select_neurons(
     group_names=None,
     exp_names=None,
     session_names=None,
+    sessions_after=None,
     exclude_mua=True,
     as_df=True,
     exclude_excluded_recordings=True,
@@ -74,6 +78,8 @@ def select_neurons(
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
     if session_names:
         stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as con:
         rp = con.execute(stmt)
@@ -94,6 +100,7 @@ def select_ifr(
     group_names=None,
     exp_names=None,
     session_names=None,
+    sessions_after=None,
     exclude_mua=True,
     as_df=True,
     align_to_block=False,
@@ -171,6 +178,8 @@ def select_ifr(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -193,6 +202,7 @@ def select_spike_times(
     group_names=None,
     exp_names=None,
     session_names=None,
+    sessions_after=None,
     exclude_mua=True,
     as_df=True,
     align_to_block=False,
@@ -270,6 +280,8 @@ def select_spike_times(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -287,6 +299,7 @@ def select_waveforms(
     neuron_ids=None,
     exp_names=None,
     session_names=None,
+    sessions_after=None,
     exclude_mua=True,
     as_df=True,
     align_to_block=False,
@@ -334,6 +347,8 @@ def select_waveforms(
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
     if exclude_mua:
         stmt = stmt.where(not_(neurons.c.is_single_unit == 0))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -355,6 +370,7 @@ def select_analog_signal_data(
     t_after=0,
     group_names=None,
     session_names=None,
+    sessions_after=None,
     exp_names=None,
     as_df=True,
     align_to_block=False,
@@ -434,6 +450,8 @@ def select_analog_signal_data(
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
     if session_names:
         stmt = stmt.where(r_sesh.c.session_name.in_(session_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -453,6 +471,7 @@ def select_stft(
     t_after=0,
     group_names=None,
     exp_names=None,
+    sessions_after=None,
     as_df=True,
     align_to_block=False,
     exclude_excluded_recordings=True,
@@ -525,6 +544,8 @@ def select_stft(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -544,6 +565,7 @@ def select_discrete_data(
     t_before=0,
     t_after=0,
     group_names=None,
+    sessions_after=None,
     exp_names=None,
     as_df=True,
     align_to_block=False,
@@ -619,6 +641,8 @@ def select_discrete_data(
         stmt = stmt.where(groups.c.group_name.in_(group_names))
     if exp_names:
         stmt = stmt.where(experiments.c.experiment_name.in_(exp_names))
+    if sessions_after:
+        stmt = stmt.where(r_sesh.c.session_date >= sessions_after)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)
@@ -629,4 +653,7 @@ def select_discrete_data(
 
 def _result_proxy_to_df(rp):
     data = rp.fetchall()
-    return pd.DataFrame(data, columns=data[0].keys())
+    if not data:
+        return None
+    else:
+        return pd.DataFrame(data, columns=data[0].keys())
